@@ -1,5 +1,4 @@
-import React from 'react';
-import { MapPin, TrendingUp, Users } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -15,17 +14,6 @@ export default function Header() {
               <p className="text-sm text-gray-500">
                 AI-analysis of society's problems
               </p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <TrendingUp className="w-4 h-4" />
-              <span>Analytics</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Users className="w-4 h-4" />
-              <span>Communities</span>
             </div>
           </div>
         </div>
