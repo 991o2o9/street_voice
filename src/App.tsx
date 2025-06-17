@@ -77,6 +77,14 @@ function App() {
     });
   };
 
+  // Handle filter changes from charts
+  const handleChartFilterChange = (newFilters: Partial<FilterState>) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      ...newFilters
+    }));
+  };
+
   // Analyze reports function
   const analyzeReports = async () => {
     const unanalyzedReports = reports.filter((r) => !r.analyzed);
@@ -142,7 +150,7 @@ function App() {
             totalCount={reports.length}
           />
 
-          {/* Statistics */}
+          {/* Enhanced Statistics */}
           <StatisticsCards reports={filteredReports} />
 
           {/* Tab Navigation */}
@@ -169,8 +177,11 @@ function App() {
             <div className="p-6">
               {activeTab === 'analytics' && (
                 <div className="space-y-8">
-                  {/* Charts */}
-                  <AnalyticsCharts reports={filteredReports} />
+                  {/* Interactive Charts */}
+                  <AnalyticsCharts 
+                    reports={filteredReports} 
+                    onFilterChange={handleChartFilterChange}
+                  />
 
                   {/* Filters */}
                   <FilterPanel

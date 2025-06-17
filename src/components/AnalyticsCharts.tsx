@@ -10,15 +10,20 @@ import {
   PieChart,
   Pie,
   Cell,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
 } from 'recharts';
-import { Report } from '../types';
+import { Report, FilterState } from '../types';
 import { calculateDistrictStats } from '../utils/dataProcessing';
 
 interface AnalyticsChartsProps {
   reports: Report[];
+  onFilterChange?: (filters: Partial<FilterState>) => void;
 }
 
-export default function AnalyticsCharts({ reports }: AnalyticsChartsProps) {
+export default function AnalyticsCharts({ reports, onFilterChange }: AnalyticsChartsProps) {
   const districtStats = calculateDistrictStats(reports);
 
   // Prepare data for district chart
@@ -44,6 +49,38 @@ export default function AnalyticsCharts({ reports }: AnalyticsChartsProps) {
     value,
   }));
 
+  // Prepare timeline data (reports over time)
+  const timelineData = reports
+    .reduce((acc: Record<string, number>, report) => {
+      const date = new Date(report.timestamp).toLocaleDateString('en-US');
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {});
+
+  const timelineChartData = Object.entries(timelineData)
+    .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+    .slice(-14) // Last 14 days
+    .map(([date, count]) => ({
+      date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      reports: count,
+    }));
+
+  // Severity distribution
+  const severityData = reports
+    .filter(r => r.severity)
+    .reduce((acc: Record<string, number>, report) => {
+      const severityRange = report.severity! <= 3 ? 'Low (1-3)' : 
+                           report.severity! <= 6 ? 'Medium (4-6)' : 
+                           'High (7-10)';
+      acc[severityRange] = (acc[severityRange] || 0) + 1;
+      return acc;
+    }, {});
+
+  const severityChartData = Object.entries(severityData).map(([range, count]) => ({
+    range,
+    count,
+  }));
+
   const COLORS = [
     '#3B82F6',
     '#EF4444',
@@ -55,31 +92,71 @@ export default function AnalyticsCharts({ reports }: AnalyticsChartsProps) {
     '#84CC16',
   ];
 
+  const handleDistrictClick = (data: any) => {
+    if (onFilterChange) {
+      onFilterChange({ district: data.district });
+    }
+  };
+
+  const handleCategoryClick = (data: any) => {
+    if (onFilterChange) {
+      onFilterChange({ category: data.name });
+    }
+  };
+
+  const handleSeverityClick = (data: any) => {
+    // Could implement severity filtering if needed
+    console.log('Severity clicked:', data);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* District Statistics */}
       <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           District Statistics
+          <span className="text-sm font-normal text-gray-500 ml-2">(Click to filter)</span>
         </h3>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={districtData}>
+          <BarChart data={districtData} onClick={handleDistrictClick}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="district" tick={{ fontSize: 12 }} />
+            <XAxis 
+              dataKey="district" 
+              tick={{ fontSize: 12 }} 
+              angle={-45}
+              textAnchor="end"
+              height={80}
+            />
             <YAxis />
-            <Tooltip />
+            <Tooltip 
+              cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            />
             <Bar
               dataKey="negative"
               stackId="a"
               fill="#EF4444"
               name="Negative"
+              cursor="pointer"
             />
-            <Bar dataKey="neutral" stackId="a" fill="#6B7280" name="Neutral" />
+            <Bar 
+              dataKey="neutral" 
+              stackId="a" 
+              fill="#6B7280" 
+              name="Neutral"
+              cursor="pointer"
+            />
             <Bar
               dataKey="positive"
               stackId="a"
               fill="#10B981"
               name="Positive"
+              cursor="pointer"
             />
           </BarChart>
         </ResponsiveContainer>
@@ -89,6 +166,7 @@ export default function AnalyticsCharts({ reports }: AnalyticsChartsProps) {
       <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Category Distribution
+          <span className="text-sm font-normal text-gray-500 ml-2">(Click to filter)</span>
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
@@ -103,6 +181,8 @@ export default function AnalyticsCharts({ reports }: AnalyticsChartsProps) {
               outerRadius={80}
               fill="#8884d8"
               dataKey="value"
+              onClick={handleCategoryClick}
+              cursor="pointer"
             >
               {categoryData.map((entry, index) => (
                 <Cell
@@ -111,8 +191,77 @@ export default function AnalyticsCharts({ reports }: AnalyticsChartsProps) {
                 />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            />
           </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Timeline Chart */}
+      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Reports Timeline (Last 14 Days)
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart data={timelineChartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="date" 
+              tick={{ fontSize: 12 }}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="reports"
+              stroke="#3B82F6"
+              fill="#3B82F6"
+              fillOpacity={0.3}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Severity Distribution */}
+      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Severity Distribution
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={severityChartData} onClick={handleSeverityClick}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="range" tick={{ fontSize: 12 }} />
+            <YAxis />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            />
+            <Bar 
+              dataKey="count" 
+              fill="#8B5CF6"
+              cursor="pointer"
+            />
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>
