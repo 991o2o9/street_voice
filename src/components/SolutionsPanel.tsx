@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, Clock, DollarSign, Users, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
+import { Lightbulb, Clock, DollarSign, Users, ChevronDown, ChevronUp, CheckCircle, AlertTriangle, Phone, Mail, Globe, MapPin } from 'lucide-react';
 import { Report } from '../types';
 import { Solution, aiSolutionGenerator } from '../utils/aiSolutions';
 
@@ -66,8 +66,39 @@ export default function SolutionsPanel({ reports }: SolutionsPanelProps) {
     }
   };
 
+  const getContactInfo = (responsible: string[]) => {
+    const contacts: Record<string, { phone?: string; email?: string; website?: string }> = {
+      'City Administration': {
+        phone: '311',
+        email: 'info@city.gov',
+        website: 'city.gov'
+      },
+      'Police Department': {
+        phone: '911 (Emergency) / 311 (Non-emergency)',
+        email: 'police@city.gov'
+      },
+      'Transportation Authority': {
+        phone: '311',
+        email: 'transport@city.gov'
+      },
+      'Water Utility': {
+        phone: '1-800-WATER',
+        email: 'water@utility.com'
+      },
+      'Building Management': {
+        phone: 'Contact your building manager',
+        email: 'management@building.com'
+      }
+    };
+
+    return responsible.map(party => contacts[party] || {}).filter(contact => 
+      contact.phone || contact.email || contact.website
+    );
+  };
+
   const SolutionCard = ({ solution }: { solution: Solution }) => {
     const isExpanded = expandedSolutions.has(solution.id);
+    const contactInfo = getContactInfo(solution.responsible);
 
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -85,6 +116,7 @@ export default function SolutionsPanel({ reports }: SolutionsPanelProps) {
               
               <div className="flex flex-wrap gap-2 mb-2">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(solution.priority)}`}>
+                  <AlertTriangle className="w-3 h-3 inline mr-1" />
                   {solution.priority.toUpperCase()}
                 </span>
                 <div className="flex items-center space-x-1 text-xs text-gray-500">
@@ -110,44 +142,96 @@ export default function SolutionsPanel({ reports }: SolutionsPanelProps) {
 
         {isExpanded && (
           <div className="px-4 pb-4 border-t border-gray-100">
-            <div className="mt-4 space-y-4">
+            <div className="mt-4 space-y-6">
               {/* Action Steps */}
               <div>
-                <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                   <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
                   Action Steps
                 </h4>
-                <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600 ml-6">
+                <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600 ml-6">
                   {solution.steps.map((step, index) => (
-                    <li key={index}>{step}</li>
+                    <li key={index} className="leading-relaxed">{step}</li>
                   ))}
                 </ol>
               </div>
 
               {/* Responsible Parties */}
               <div>
-                <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                   <Users className="w-4 h-4 mr-2 text-blue-500" />
                   Responsible Parties
                 </h4>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-2">
                   {solution.responsible.map((party, index) => (
-                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                    <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
                       {party}
                     </span>
                   ))}
                 </div>
               </div>
 
+              {/* Contact Information */}
+              {contactInfo.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                    <Phone className="w-4 h-4 mr-2 text-green-500" />
+                    Contact Information
+                  </h4>
+                  <div className="space-y-3">
+                    {contactInfo.map((contact, index) => (
+                      <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                          {contact.phone && (
+                            <div className="flex items-center space-x-2">
+                              <Phone className="w-3 h-3 text-gray-500" />
+                              <span className="text-gray-700">{contact.phone}</span>
+                            </div>
+                          )}
+                          {contact.email && (
+                            <div className="flex items-center space-x-2">
+                              <Mail className="w-3 h-3 text-gray-500" />
+                              <span className="text-gray-700">{contact.email}</span>
+                            </div>
+                          )}
+                          {contact.website && (
+                            <div className="flex items-center space-x-2">
+                              <Globe className="w-3 h-3 text-gray-500" />
+                              <span className="text-blue-600">{contact.website}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Resources */}
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">Resources</h4>
-                <div className="flex flex-wrap gap-1">
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <MapPin className="w-4 h-4 mr-2 text-purple-500" />
+                  Required Resources
+                </h4>
+                <div className="flex flex-wrap gap-2">
                   {solution.resources.map((resource, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                    <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
                       {resource}
                     </span>
                   ))}
+                </div>
+              </div>
+
+              {/* Success Metrics */}
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3">Expected Outcomes</h4>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <ul className="text-sm text-green-800 space-y-1">
+                    <li>• Problem resolution within estimated timeframe</li>
+                    <li>• Improved citizen satisfaction</li>
+                    <li>• Prevention of similar issues</li>
+                    <li>• Enhanced community engagement</li>
+                  </ul>
                 </div>
               </div>
             </div>

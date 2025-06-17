@@ -36,13 +36,13 @@ class RedditService {
   private accessToken: string | null = null;
   private tokenExpiry: number = 0;
 
-  // Rate limiting
+  // Rate limiting - reduced for more data
   private lastRequestTime: number = 0;
-  private minRequestInterval: number = 3000; // 3 seconds between requests
-  private rateLimitRetryDelay: number = 60000; // 1 minute retry delay for 429 errors
-  private maxRetries: number = 3;
+  private minRequestInterval: number = 1500; // Reduced from 3000 to 1500ms
+  private rateLimitRetryDelay: number = 30000; // Reduced from 60000 to 30000ms
+  private maxRetries: number = 5; // Increased from 3 to 5
 
-  // Safe, popular English-speaking subreddits without quarantine
+  // Expanded list of safe, popular English-speaking subreddits
   private safeSubreddits = [
     'nyc',
     'LosAngeles',
@@ -61,6 +61,40 @@ class RedditService {
     'UrbanPlanning',
     'transit',
     'PublicFreakout',
+    'houston',
+    'denver',
+    'portland',
+    'atlanta',
+    'miami',
+    'washingtondc',
+    'baltimore',
+    'detroit',
+    'phoenix',
+    'sandiego',
+    'vancouver',
+    'montreal',
+    'calgary',
+    'ottawa',
+    'edmonton',
+    'winnipeg',
+    'halifax',
+    'dublin',
+    'manchester',
+    'birmingham',
+    'glasgow',
+    'edinburgh',
+    'bristol',
+    'leeds',
+    'liverpool',
+    'newcastle',
+    'cardiff',
+    'belfast',
+    'perth',
+    'brisbane',
+    'adelaide',
+    'auckland',
+    'wellington',
+    'christchurch',
   ];
 
   private async rateLimitDelay(): Promise<void> {
@@ -147,7 +181,7 @@ class RedditService {
         );
 
         if (retryCount < this.maxRetries) {
-          const delay = this.rateLimitRetryDelay * Math.pow(2, retryCount); // Exponential backoff
+          const delay = this.rateLimitRetryDelay * Math.pow(1.5, retryCount); // Reduced exponential backoff
           console.log(`Waiting ${delay}ms before retry...`);
           await new Promise((resolve) => setTimeout(resolve, delay));
           return this.makeAuthenticatedRequest(url, retryCount + 1);
@@ -209,7 +243,7 @@ class RedditService {
         );
 
         if (retryCount < this.maxRetries) {
-          const delay = this.rateLimitRetryDelay * Math.pow(2, retryCount); // Exponential backoff
+          const delay = this.rateLimitRetryDelay * Math.pow(1.5, retryCount); // Reduced exponential backoff
           console.log(`Waiting ${delay}ms before retry...`);
           await new Promise((resolve) => setTimeout(resolve, delay));
           return this.makePublicRequest(url, retryCount + 1);
@@ -283,7 +317,7 @@ class RedditService {
     return data ? data.data.children.map((child) => child.data) : [];
   }
 
-  // Search for city complaints and issues in English
+  // Search for city complaints and issues in English - INCREASED LIMITS
   async getCityComplaints(): Promise<RedditPost[]> {
     const queries = [
       'traffic jam problem',
@@ -305,35 +339,43 @@ class RedditService {
       'municipal issue',
       'local government',
       'urban planning fail',
+      'public transport',
+      'infrastructure',
+      'city services',
+      'maintenance issue',
+      'utility problem',
+      'housing problem',
     ];
 
     const allPosts: RedditPost[] = [];
 
-    // Reduced number of subreddits and queries to avoid rate limiting
-    for (const subreddit of this.safeSubreddits.slice(0, 3)) {
-      // Reduced from 5 to 3
+    // INCREASED: More subreddits and posts per subreddit
+    for (const subreddit of this.safeSubreddits.slice(0, 8)) { // Increased from 3 to 8
       console.log(`Searching in r/${subreddit}...`);
 
       try {
-        // First try to get regular posts from subreddit
-        const regularPosts = await this.getSubredditPosts(subreddit, 'new', 5); // Reduced from 10 to 5
+        // First try to get regular posts from subreddit - INCREASED LIMIT
+        const regularPosts = await this.getSubredditPosts(subreddit, 'new', 15); // Increased from 5 to 15
         allPosts.push(...regularPosts);
 
-        // Then search for specific queries (only 1 query per subreddit)
-        const query = queries[0]; // Only use first query
-        const posts = await this.searchPosts(query, subreddit, 3);
-        allPosts.push(...posts);
+        // Then search for specific queries - MORE QUERIES
+        for (const query of queries.slice(0, 3)) { // Increased from 1 to 3 queries per subreddit
+          const posts = await this.searchPosts(query, subreddit, 8); // Increased from 3 to 8
+          allPosts.push(...posts);
+        }
       } catch (error) {
         console.warn(`Failed to fetch from r/${subreddit}:`, error);
         continue;
       }
     }
 
-    // Very limited global search
-    console.log('Performing limited global search...');
+    // INCREASED: More global searches
+    console.log('Performing expanded global search...');
     try {
-      const globalPosts = await this.searchPosts(queries[0], undefined, 5);
-      allPosts.push(...globalPosts);
+      for (const query of queries.slice(0, 5)) { // Increased from 1 to 5 global queries
+        const globalPosts = await this.searchPosts(query, undefined, 10); // Increased from 5 to 10
+        allPosts.push(...globalPosts);
+      }
     } catch (error) {
       console.warn(`Failed global search:`, error);
     }
@@ -353,7 +395,7 @@ class RedditService {
     });
 
     console.log(`Found ${filteredPosts.length} unique posts`);
-    return filteredPosts.slice(0, 30); // Reduced from 50 to 30
+    return filteredPosts.slice(0, 100); // INCREASED from 30 to 100
   }
 
   // Check subreddit availability (using public endpoints)
@@ -386,13 +428,12 @@ class RedditService {
     }
   }
 
-  // Get list of available subreddits
+  // Get list of available subreddits - INCREASED CHECK COUNT
   async getAvailableSubreddits(): Promise<string[]> {
     const available: string[] = [];
 
-    // Check even fewer subreddits for speed and to avoid rate limiting
-    for (const subreddit of this.safeSubreddits.slice(0, 5)) {
-      // Reduced from 8 to 5
+    // Check more subreddits for better coverage
+    for (const subreddit of this.safeSubreddits.slice(0, 12)) { // Increased from 5 to 12
       try {
         const isAvailable = await this.checkSubredditAvailability(subreddit);
         if (isAvailable) {
