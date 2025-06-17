@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import FilterPanel from './components/FilterPanel';
 import StatisticsCards from './components/StatisticsCards';
@@ -7,9 +7,12 @@ import ReportsTable from './components/ReportsTable';
 import ReportsMap from './components/ReportsMap';
 import AnalyzeButton from './components/AnalyzeButton';
 import DataSourcePanel from './components/DataSourcePanel';
+import SolutionsPanel from './components/SolutionsPanel';
+import DataPersistencePanel from './components/DataPersistencePanel';
 import { Report, FilterState } from './types';
 import { batchAnalyzeTexts } from './utils/openaiAnalysis';
 import { filterReports } from './utils/dataProcessing';
+import { LocalStorageService } from './utils/localStorage';
 
 function App() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -21,6 +24,22 @@ function App() {
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
+  const [activeTab, setActiveTab] = useState<'analytics' | 'solutions' | 'data'>('analytics');
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const storedReports = LocalStorageService.loadReports();
+    if (storedReports.length > 0) {
+      setReports(storedReports);
+    }
+  }, []);
+
+  // Auto-save reports to localStorage whenever reports change
+  useEffect(() => {
+    if (reports.length > 0) {
+      LocalStorageService.saveReports(reports);
+    }
+  }, [reports]);
 
   // Get unique values for filters
   const districts = Array.from(new Set(reports.map((r) => r.district)));
@@ -39,6 +58,22 @@ function App() {
       const uniqueNewReports = newReports.filter((r) => !existingIds.has(r.id));
 
       return [...prevReports, ...uniqueNewReports];
+    });
+  };
+
+  // Handle loading reports from storage or import
+  const handleReportsLoaded = (loadedReports: Report[]) => {
+    setReports(loadedReports);
+  };
+
+  // Handle clearing all data
+  const handleClearData = () => {
+    setReports([]);
+    setFilters({
+      category: 'all',
+      sentiment: 'all',
+      district: 'all',
+      search: '',
     });
   };
 
@@ -80,6 +115,12 @@ function App() {
 
   const analyzedCount = reports.filter((r) => r.analyzed).length;
 
+  const tabs = [
+    { id: 'analytics', label: 'Analytics', icon: '📊' },
+    { id: 'solutions', label: 'AI Solutions', icon: '💡' },
+    { id: 'data', label: 'Data Management', icon: '💾' },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -104,22 +145,62 @@ function App() {
           {/* Statistics */}
           <StatisticsCards reports={filteredReports} />
 
-          {/* Charts */}
-          <AnalyticsCharts reports={filteredReports} />
+          {/* Tab Navigation */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="mr-2">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
 
-          {/* Filters */}
-          <FilterPanel
-            filters={filters}
-            onFiltersChange={setFilters}
-            districts={districts}
-            categories={categories}
-          />
+            <div className="p-6">
+              {activeTab === 'analytics' && (
+                <div className="space-y-8">
+                  {/* Charts */}
+                  <AnalyticsCharts reports={filteredReports} />
 
-          {/* Map and Table */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            <ReportsMap reports={filteredReports} />
-            <div className="xl:col-span-1">
-              <ReportsTable reports={filteredReports} />
+                  {/* Filters */}
+                  <FilterPanel
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    districts={districts}
+                    categories={categories}
+                  />
+
+                  {/* Map and Table */}
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <ReportsMap reports={filteredReports} />
+                    <div className="xl:col-span-1">
+                      <ReportsTable reports={filteredReports} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'solutions' && (
+                <SolutionsPanel reports={filteredReports} />
+              )}
+
+              {activeTab === 'data' && (
+                <DataPersistencePanel
+                  reports={reports}
+                  onReportsLoaded={handleReportsLoaded}
+                  onClearData={handleClearData}
+                />
+              )}
             </div>
           </div>
         </div>
