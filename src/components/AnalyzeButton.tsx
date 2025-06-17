@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Zap, Loader2 } from 'lucide-react';
 
 interface AnalyzeButtonProps {
@@ -8,17 +7,22 @@ interface AnalyzeButtonProps {
   totalCount: number;
 }
 
-export default function AnalyzeButton({ onAnalyze, isAnalyzing, analyzedCount, totalCount }: AnalyzeButtonProps) {
+export default function AnalyzeButton({
+  onAnalyze,
+  isAnalyzing,
+  analyzedCount,
+  totalCount,
+}: AnalyzeButtonProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">AI-Анализ</h3>
+          <h3 className="text-lg font-semibold text-gray-900">AI Analysis</h3>
           <p className="text-sm text-gray-600 mt-1">
-            Проанализировано: {analyzedCount} из {totalCount} сообщений
+            Analyzed: {analyzedCount} of {totalCount} messages
           </p>
         </div>
-        
+
         <button
           onClick={onAnalyze}
           disabled={isAnalyzing || analyzedCount === totalCount}
@@ -27,27 +31,27 @@ export default function AnalyzeButton({ onAnalyze, isAnalyzing, analyzedCount, t
           {isAnalyzing ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Анализирую...</span>
+              <span>Analyzing...</span>
             </>
           ) : (
             <>
               <Zap className="w-5 h-5" />
               <span>
-                {analyzedCount === totalCount ? 'Все проанализированы' : 'Анализировать'}
+                {analyzedCount === totalCount ? 'All Analyzed' : 'Analyze'}
               </span>
             </>
           )}
         </button>
       </div>
-      
+
       {analyzedCount > 0 && (
         <div className="mt-4">
           <div className="flex justify-between text-sm text-gray-600 mb-1">
-            <span>Прогресс</span>
+            <span>Progress</span>
             <span>{Math.round((analyzedCount / totalCount) * 100)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${(analyzedCount / totalCount) * 100}%` }}
             ></div>

@@ -11,19 +11,21 @@ export default function Header() {
               <MapPin className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Голос улицы</h1>
-              <p className="text-sm text-gray-500">AI-анализ проблем общества</p>
+              <h1 className="text-xl font-bold text-gray-900">Street Voice</h1>
+              <p className="text-sm text-gray-500">
+                AI-analysis of society's problems
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <TrendingUp className="w-4 h-4" />
-              <span>Аналитика</span>
+              <span>Analytics</span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Users className="w-4 h-4" />
-              <span>Сообщества</span>
+              <span>Communities</span>
             </div>
           </div>
         </div>

@@ -1,15 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Report } from '../types';
 import { getSentimentColor } from '../utils/dataProcessing';
 
-// Fix for default markers in leaflet
+// Fix for default markers in Leaflet
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconRetinaUrl:
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl:
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl:
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
 interface ReportsMapProps {
@@ -24,54 +28,91 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Initialize map
+    // Initialize the map
     if (!mapInstanceRef.current) {
-      mapInstanceRef.current = L.map(mapRef.current).setView([42.8746, 74.5698], 12);
-      
+      mapInstanceRef.current = L.map(mapRef.current).setView(
+        [39.8283, -98.5795],
+        4
+      );
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
+        attribution: '© OpenStreetMap contributors',
       }).addTo(mapInstanceRef.current);
     }
 
-    // Clear existing markers
-    markersRef.current.forEach(marker => {
+    // Remove existing markers
+    markersRef.current.forEach((marker) => {
       mapInstanceRef.current?.removeLayer(marker);
     });
     markersRef.current = [];
 
     // Add new markers
-    reports.forEach(report => {
+    reports.forEach((report) => {
       if (!mapInstanceRef.current) return;
 
-      const color = report.sentiment ? getSentimentColor(report.sentiment) : '#6B7280';
-      
+      const color = report.sentiment
+        ? getSentimentColor(report.sentiment)
+        : '#6B7280';
+
       const customIcon = L.divIcon({
         className: 'custom-div-icon',
         html: `<div style="background-color: ${color}; width: 15px; height: 15px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
         iconSize: [15, 15],
-        iconAnchor: [7.5, 7.5]
+        iconAnchor: [7.5, 7.5],
       });
 
       const marker = L.marker(report.coordinates, { icon: customIcon })
-        .bindPopup(`
+        .bindPopup(
+          `
           <div class="max-w-xs">
-            <div class="font-semibold text-gray-900 mb-2">${report.district}</div>
+            <div class="font-semibold text-gray-900 mb-2">${
+              report.district
+            }</div>
             <div class="text-sm text-gray-700 mb-2">${report.text}</div>
             <div class="flex flex-wrap gap-1 text-xs">
-              ${report.category ? `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">${report.category}</span>` : ''}
-              ${report.sentiment ? `<span class="bg-gray-100 text-gray-800 px-2 py-1 rounded">${report.sentiment}</span>` : ''}
+              ${
+                report.category
+                  ? `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">${report.category}</span>`
+                  : ''
+              }
+              ${
+                report.sentiment
+                  ? `<span class="bg-gray-100 text-gray-800 px-2 py-1 rounded">${report.sentiment}</span>`
+                  : ''
+              }
             </div>
-            <div class="text-xs text-gray-500 mt-2">${new Date(report.timestamp).toLocaleString('ru-RU')}</div>
+            <div class="text-xs text-gray-500 mt-2">${new Date(
+              report.timestamp
+            ).toLocaleString('en-US')}</div>
           </div>
-        `)
+        `
+        )
         .addTo(mapInstanceRef.current);
 
       markersRef.current.push(marker);
     });
 
+    // Автоматическое масштабирование карты под все маркеры
+    if (reports.length > 0 && mapInstanceRef.current) {
+      if (reports.length === 1) {
+        // Если маркер один, центрируем карту на нем с подходящим зумом
+        const report = reports[0];
+        mapInstanceRef.current.setView(report.coordinates, 12);
+      } else {
+        // Если маркеров несколько, используем fitBounds
+        const bounds = L.latLngBounds(
+          reports.map((report) => report.coordinates)
+        );
+        mapInstanceRef.current.fitBounds(bounds, {
+          padding: [50, 50], // Внутренний отступ
+          maxZoom: 15, // Максимальный зум для избежания слишком сильного приближения
+        });
+      }
+    }
+
     return () => {
-      // Cleanup function
-      markersRef.current.forEach(marker => {
+      // Cleanup markers on unmount or update
+      markersRef.current.forEach((marker) => {
         mapInstanceRef.current?.removeLayer(marker);
       });
       markersRef.current = [];
@@ -90,19 +131,19 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Карта сообщений</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Report Map</h2>
         <div className="flex items-center space-x-4 mt-2 text-sm">
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="text-gray-600">Негативные</span>
+            <span className="text-gray-600">Negative</span>
           </div>
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-            <span className="text-gray-600">Нейтральные</span>
+            <span className="text-gray-600">Neutral</span>
           </div>
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-gray-600">Позитивные</span>
+            <span className="text-gray-600">Positive</span>
           </div>
         </div>
       </div>
