@@ -17,11 +17,32 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+      <div
+        className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto transform transition-all duration-300 ease-in-out"
+        style={{
+          animation: 'modalFadeIn 0.3s ease-out',
+        }}
+      >
+        <style>
+          {`
+            @keyframes modalFadeIn {
+              from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+              }
+            }
+          `}
+        </style>
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Full Message</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Full Message
+            </h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -29,30 +50,36 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
               <X className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
                 {report.text}
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500">Location</label>
+                <label className="text-sm font-medium text-gray-500">
+                  Location
+                </label>
                 <p className="text-gray-900 flex items-center mt-1">
                   <MapPin className="w-4 h-4 mr-1" />
                   {report.location}
                 </p>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium text-gray-500">District</label>
+                <label className="text-sm font-medium text-gray-500">
+                  District
+                </label>
                 <p className="text-gray-900 mt-1">{report.district}</p>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium text-gray-500">Category</label>
+                <label className="text-sm font-medium text-gray-500">
+                  Category
+                </label>
                 <div className="mt-1">
                   {report.category ? (
                     <span
@@ -68,9 +95,11 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
                   )}
                 </div>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium text-gray-500">Sentiment</label>
+                <label className="text-sm font-medium text-gray-500">
+                  Sentiment
+                </label>
                 <div className="mt-1">
                   {report.sentiment ? (
                     <span
@@ -86,10 +115,12 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
                   )}
                 </div>
               </div>
-              
+
               {report.severity && (
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Severity</label>
+                  <label className="text-sm font-medium text-gray-500">
+                    Severity
+                  </label>
                   <div className="mt-1 flex items-center">
                     <div className="flex space-x-1">
                       {[...Array(10)].map((_, i) => (
@@ -113,9 +144,11 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
                   </div>
                 </div>
               )}
-              
+
               <div>
-                <label className="text-sm font-medium text-gray-500">Date</label>
+                <label className="text-sm font-medium text-gray-500">
+                  Date
+                </label>
                 <p className="text-gray-900 flex items-center mt-1">
                   <Calendar className="w-4 h-4 mr-1" />
                   {new Date(report.timestamp).toLocaleString('en-US')}
@@ -170,7 +203,10 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{ width: '40%', minWidth: '400px' }}
+                >
                   Message
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -194,12 +230,13 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
               {reports.map((report) => (
                 <tr
                   key={report.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => setSelectedReport(report)}
                 >
                   <td className="px-6 py-4">
-                    <div className="max-w-md">
+                    <div className="w-full">
                       <p className="text-sm text-gray-900">
-                        {truncateText(report.text, 120)}
+                        {truncateText(report.text, 80)}
                       </p>
                       <div className="flex items-center mt-1 text-xs text-gray-500">
                         <MapPin className="w-3 h-3 mr-1" />
@@ -248,7 +285,10 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                   </td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => setSelectedReport(report)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedReport(report);
+                      }}
                       className="text-blue-600 hover:text-blue-800 transition-colors flex items-center space-x-1"
                     >
                       <Eye className="w-4 h-4" />
