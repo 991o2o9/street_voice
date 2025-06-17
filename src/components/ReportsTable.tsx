@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, MapPin, MessageSquare, Eye, X } from 'lucide-react';
 import { Report } from '../types';
 import { getSentimentColor, getCategoryColor } from '../utils/dataProcessing';
