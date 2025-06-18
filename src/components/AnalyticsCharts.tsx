@@ -109,33 +109,46 @@ export default function AnalyticsCharts({ reports, onFilterChange }: AnalyticsCh
     console.log('Severity clicked:', data);
   };
 
+  // Check if dark mode is active
+  const isDarkMode = document.documentElement.classList.contains('dark');
+
+  // Custom tooltip styles for dark mode
+  const tooltipStyle = {
+    backgroundColor: isDarkMode ? '#374151' : 'white',
+    border: `1px solid ${isDarkMode ? '#4B5563' : '#e5e7eb'}`,
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    color: isDarkMode ? '#F9FAFB' : '#111827'
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* District Statistics */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           District Statistics
-          <span className="text-sm font-normal text-gray-500 ml-2">(Click to filter)</span>
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">(Click to filter)</span>
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={districtData} onClick={handleDistrictClick}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#4B5563' : '#e5e7eb'} />
             <XAxis 
               dataKey="district" 
-              tick={{ fontSize: 12 }} 
+              tick={{ fontSize: 12, fill: isDarkMode ? '#D1D5DB' : '#374151' }} 
               angle={-45}
               textAnchor="end"
               height={80}
+              axisLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+              tickLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
             />
-            <YAxis />
+            <YAxis 
+              tick={{ fill: isDarkMode ? '#D1D5DB' : '#374151' }}
+              axisLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+              tickLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+            />
             <Tooltip 
               cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
+              contentStyle={tooltipStyle}
             />
             <Bar
               dataKey="negative"
@@ -163,10 +176,10 @@ export default function AnalyticsCharts({ reports, onFilterChange }: AnalyticsCh
       </div>
 
       {/* Category Distribution */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Category Distribution
-          <span className="text-sm font-normal text-gray-500 ml-2">(Click to filter)</span>
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">(Click to filter)</span>
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
@@ -192,40 +205,36 @@ export default function AnalyticsCharts({ reports, onFilterChange }: AnalyticsCh
               ))}
             </Pie>
             <Tooltip 
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
+              contentStyle={tooltipStyle}
             />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
       {/* Timeline Chart */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Reports Timeline (Last 14 Days)
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={timelineChartData}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#4B5563' : '#e5e7eb'} />
             <XAxis 
               dataKey="date" 
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: isDarkMode ? '#D1D5DB' : '#374151' }}
               angle={-45}
               textAnchor="end"
               height={80}
+              axisLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+              tickLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
             />
-            <YAxis />
+            <YAxis 
+              tick={{ fill: isDarkMode ? '#D1D5DB' : '#374151' }}
+              axisLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+              tickLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+            />
             <Tooltip 
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
+              contentStyle={tooltipStyle}
             />
             <Area
               type="monotone"
@@ -239,22 +248,26 @@ export default function AnalyticsCharts({ reports, onFilterChange }: AnalyticsCh
       </div>
 
       {/* Severity Distribution */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Severity Distribution
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={severityChartData} onClick={handleSeverityClick}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="range" tick={{ fontSize: 12 }} />
-            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#4B5563' : '#e5e7eb'} />
+            <XAxis 
+              dataKey="range" 
+              tick={{ fontSize: 12, fill: isDarkMode ? '#D1D5DB' : '#374151' }}
+              axisLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+              tickLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+            />
+            <YAxis 
+              tick={{ fill: isDarkMode ? '#D1D5DB' : '#374151' }}
+              axisLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+              tickLine={{ stroke: isDarkMode ? '#6B7280' : '#9CA3AF' }}
+            />
             <Tooltip 
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
+              contentStyle={tooltipStyle}
             />
             <Bar 
               dataKey="count" 
