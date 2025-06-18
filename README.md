@@ -38,7 +38,10 @@
 
 ## 🖼️ Interface
 
-_(You can include screenshots here: UI, charts, map view, complaint generation panel)_
+![image](https://github.com/user-attachments/assets/30206ebf-7d1f-4728-8e10-20a878cc44ee)
+![image](https://github.com/user-attachments/assets/f410d3b3-210d-45d4-9a7c-59d08a6f4986)
+![image](https://github.com/user-attachments/assets/19c68675-8aaf-4266-9c7b-ab90cd8e3f6c)
+![image](https://github.com/user-attachments/assets/6d7fe9d4-bb19-4ca7-8c11-f28949bc9f44)
 
 ---
 
