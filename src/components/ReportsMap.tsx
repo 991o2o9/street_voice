@@ -129,21 +129,21 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Report Map</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Report Map</h2>
         <div className="flex items-center space-x-4 mt-2 text-sm">
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="text-gray-600">Negative</span>
+            <span className="text-gray-600 dark:text-gray-400">Negative</span>
           </div>
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-            <span className="text-gray-600">Neutral</span>
+            <span className="text-gray-600 dark:text-gray-400">Neutral</span>
           </div>
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-gray-600">Positive</span>
+            <span className="text-gray-600 dark:text-gray-400">Positive</span>
           </div>
         </div>
       </div>

@@ -101,14 +101,14 @@ export default function DataPersistencePanel({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <div className="flex items-center space-x-3 mb-4">
         <div className="bg-purple-500 p-2 rounded-lg">
           <HardDrive className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Data Management</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Data Management</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Save, load, and manage your data
           </p>
         </div>
@@ -116,33 +116,33 @@ export default function DataPersistencePanel({
 
       {/* Storage Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
-            <HardDrive className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Storage Used</span>
+            <HardDrive className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Storage Used</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{storageUsedMB}MB</p>
-          <p className="text-xs text-gray-500">{storageUsedPercent}% of available</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{storageUsedMB}MB</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{storageUsedPercent}% of available</p>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
-            <Save className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Reports Stored</span>
+            <Save className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Reports Stored</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{reports.length}</p>
-          <p className="text-xs text-gray-500">in current session</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{reports.length}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">in current session</p>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
-            <AlertCircle className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Last Saved</span>
+            <AlertCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Last Saved</span>
           </div>
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
             {lastUpdate ? lastUpdate.toLocaleTimeString() : 'Never'}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             {lastUpdate ? lastUpdate.toLocaleDateString() : 'No data saved'}
           </p>
         </div>
@@ -153,7 +153,7 @@ export default function DataPersistencePanel({
         <button
           onClick={handleSaveToStorage}
           disabled={reports.length === 0}
-          className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200"
+          className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200"
         >
           <Save className="w-4 h-4" />
           <span>Save</span>
@@ -170,7 +170,7 @@ export default function DataPersistencePanel({
         <button
           onClick={handleExportData}
           disabled={reports.length === 0 || isExporting}
-          className="flex items-center justify-center space-x-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200"
+          className="flex items-center justify-center space-x-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200"
         >
           {isExporting ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -198,10 +198,10 @@ export default function DataPersistencePanel({
       </div>
 
       {/* Clear Data Button */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
+      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleClearAllData}
-          className="flex items-center space-x-2 text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
+          className="flex items-center space-x-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors duration-200"
         >
           <Trash2 className="w-4 h-4" />
           <span>Clear All Data</span>
@@ -209,12 +209,12 @@ export default function DataPersistencePanel({
       </div>
 
       {/* Info Box */}
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
         <div className="flex items-start space-x-2">
-          <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-blue-800">
+          <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-blue-800 dark:text-blue-200">
             <p className="font-medium mb-1">Data Persistence:</p>
-            <ul className="text-xs space-y-1 text-blue-700">
+            <ul className="text-xs space-y-1 text-blue-700 dark:text-blue-300">
               <li>• Data is saved locally in your browser</li>
               <li>• Export data to backup to your device</li>
               <li>• Import data to restore from backup</li>
