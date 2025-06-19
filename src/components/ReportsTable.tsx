@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Calendar, MapPin, MessageSquare, Eye, X, AlertTriangle } from 'lucide-react';
+import {
+  Calendar,
+  MapPin,
+  MessageSquare,
+  Eye,
+  X,
+  AlertTriangle,
+} from 'lucide-react';
 import { Report } from '../types';
 import { getSentimentColor, getCategoryColor } from '../utils/dataProcessing';
 
@@ -73,7 +80,9 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   District
                 </label>
-                <p className="text-gray-900 dark:text-gray-100 mt-1">{report.district}</p>
+                <p className="text-gray-900 dark:text-gray-100 mt-1">
+                  {report.district}
+                </p>
               </div>
 
               <div>
@@ -91,7 +100,9 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
                       {report.category}
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">Not defined</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      Not defined
+                    </span>
                   )}
                 </div>
               </div>
@@ -111,7 +122,9 @@ function MessageModal({ report, isOpen, onClose }: MessageModalProps) {
                       {report.sentiment}
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">Not defined</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      Not defined
+                    </span>
                   )}
                 </div>
               </div>
@@ -264,7 +277,9 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                         {report.category}
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-400 dark:text-gray-500">Not defined</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        Not defined
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -278,19 +293,31 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                         {getSentimentLabel(report.sentiment)}
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-400 dark:text-gray-500">Not defined</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        Not defined
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {report.severity ? (
                       <div className="flex items-center space-x-2">
-                        <AlertTriangle className={`w-4 h-4 ${getSeverityColor(report.severity)}`} />
-                        <span className={`text-sm font-medium ${getSeverityColor(report.severity)}`}>
+                        <AlertTriangle
+                          className={`w-4 h-4 ${getSeverityColor(
+                            report.severity
+                          )}`}
+                        />
+                        <span
+                          className={`text-sm font-medium ${getSeverityColor(
+                            report.severity
+                          )}`}
+                        >
                           {report.severity}/10
                         </span>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400 dark:text-gray-500">Not defined</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        Not defined
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -325,7 +352,9 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
         {reports.length === 0 && (
           <div className="px-6 py-12 text-center">
             <MessageSquare className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">No messages found</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              No messages found
+            </p>
           </div>
         )}
       </div>

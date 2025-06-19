@@ -35,17 +35,14 @@ export default function DataSourcePanel({
     try {
       console.log('Loading data from Reddit...');
 
-      // Check available subreddits
       console.log('Checking available subreddits...');
       const available = await redditService.getAvailableSubreddits();
       setAvailableSubreddits(available);
       console.log(`Available subreddits: ${available.join(', ')}`);
 
-      // Get posts from Reddit
       const redditPosts = await redditService.getCityComplaints();
       console.log(`Fetched ${redditPosts.length} posts from Reddit`);
 
-      // Convert to Report format
       const reports = processRedditPosts(redditPosts);
       console.log(`Processed ${reports.length} relevant messages`);
 
@@ -75,9 +72,12 @@ export default function DataSourcePanel({
   };
 
   const getStatusIcon = () => {
-    if (errorMessage) return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
+    if (errorMessage)
+      return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
     if (loadedCount > 0)
-      return <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />;
+      return (
+        <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />
+      );
     return <Globe className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
   };
 
@@ -89,7 +89,9 @@ export default function DataSourcePanel({
             <Globe className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Data Source</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Data Source
+            </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {lastUpdate ? (
                 <>Last update: {lastUpdate.toLocaleString()}</>
@@ -123,7 +125,9 @@ export default function DataSourcePanel({
         <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
             <Download className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Loaded</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Loaded
+            </span>
           </div>
           <p className={`text-2xl font-bold ${getStatusColor()}`}>
             {loadedCount}
@@ -134,7 +138,9 @@ export default function DataSourcePanel({
         <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
             <RefreshCw className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Updated</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Updated
+            </span>
           </div>
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
             {lastUpdate ? lastUpdate.toLocaleTimeString('en-US') : 'Never'}
@@ -147,7 +153,9 @@ export default function DataSourcePanel({
         <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
             {getStatusIcon()}
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Status
+            </span>
           </div>
           <p className={`text-sm font-semibold ${getStatusColor()}`}>
             {errorMessage ? 'Error' : loadedCount > 0 ? 'Active' : 'Ready'}
@@ -201,7 +209,9 @@ export default function DataSourcePanel({
             <XCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-red-800 dark:text-red-200">
               <p className="font-medium mb-1">Error loading data:</p>
-              <p className="text-xs text-red-700 dark:text-red-300">{errorMessage}</p>
+              <p className="text-xs text-red-700 dark:text-red-300">
+                {errorMessage}
+              </p>
             </div>
           </div>
         </div>

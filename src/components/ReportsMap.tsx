@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Report } from '../types';
 import { getSentimentColor } from '../utils/dataProcessing';
 
-// Fix for default markers in Leaflet
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -28,7 +27,6 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Initialize the map
     if (!mapInstanceRef.current) {
       mapInstanceRef.current = L.map(mapRef.current).setView(
         [39.8283, -98.5795],
@@ -40,13 +38,11 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
       }).addTo(mapInstanceRef.current);
     }
 
-    // Remove existing markers
     markersRef.current.forEach((marker) => {
       mapInstanceRef.current?.removeLayer(marker);
     });
     markersRef.current = [];
 
-    // Add new markers
     reports.forEach((report) => {
       if (!mapInstanceRef.current) return;
 
@@ -92,26 +88,22 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
       markersRef.current.push(marker);
     });
 
-    // Автоматическое масштабирование карты под все маркеры
     if (reports.length > 0 && mapInstanceRef.current) {
       if (reports.length === 1) {
-        // Если маркер один, центрируем карту на нем с подходящим зумом
         const report = reports[0];
         mapInstanceRef.current.setView(report.coordinates, 12);
       } else {
-        // Если маркеров несколько, используем fitBounds
         const bounds = L.latLngBounds(
           reports.map((report) => report.coordinates)
         );
         mapInstanceRef.current.fitBounds(bounds, {
-          padding: [50, 50], // Внутренний отступ
-          maxZoom: 15, // Максимальный зум для избежания слишком сильного приближения
+          padding: [50, 50],
+          maxZoom: 15,
         });
       }
     }
 
     return () => {
-      // Cleanup markers on unmount or update
       markersRef.current.forEach((marker) => {
         mapInstanceRef.current?.removeLayer(marker);
       });
@@ -131,7 +123,9 @@ export default function ReportsMap({ reports }: ReportsMapProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Report Map</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Report Map
+        </h2>
         <div className="flex items-center space-x-4 mt-2 text-sm">
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>

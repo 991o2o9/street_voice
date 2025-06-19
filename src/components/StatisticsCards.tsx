@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   BarChart3,
   TrendingDown,
@@ -6,7 +5,6 @@ import {
   AlertTriangle,
   Clock,
   MapPin,
-  Users,
   Zap,
 } from 'lucide-react';
 import { Report } from '../types';
@@ -30,19 +28,24 @@ export default function StatisticsCards({ reports }: StatisticsCardsProps) {
   const negativePercentage =
     totalReports > 0 ? (negativeReports / totalReports) * 100 : 0;
 
-  // Additional analytics
-  const uniqueDistricts = new Set(reports.map(r => r.district)).size;
-  const averageSeverity = reports.filter(r => r.severity).length > 0 
-    ? reports.filter(r => r.severity).reduce((sum, r) => sum + (r.severity || 0), 0) / reports.filter(r => r.severity).length
-    : 0;
-  
-  const recentReports = reports.filter(r => {
+  const uniqueDistricts = new Set(reports.map((r) => r.district)).size;
+  const averageSeverity =
+    reports.filter((r) => r.severity).length > 0
+      ? reports
+          .filter((r) => r.severity)
+          .reduce((sum, r) => sum + (r.severity || 0), 0) /
+        reports.filter((r) => r.severity).length
+      : 0;
+
+  const recentReports = reports.filter((r) => {
     const reportDate = new Date(r.timestamp);
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return reportDate > oneDayAgo;
   }).length;
 
-  const criticalReports = reports.filter(r => r.severity && r.severity >= 8).length;
+  const criticalReports = reports.filter(
+    (r) => r.severity && r.severity >= 8
+  ).length;
 
   const cards = [
     {
@@ -128,30 +131,34 @@ export default function StatisticsCards({ reports }: StatisticsCardsProps) {
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{card.title}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                {card.title}
+              </p>
               <p className={`text-3xl font-bold ${card.textColor} mb-1`}>
                 {card.value}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{card.description}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {card.description}
+              </p>
             </div>
             <div className={`${card.color} p-3 rounded-lg shadow-sm`}>
               <card.icon className="w-6 h-6 text-white" />
             </div>
           </div>
-          
-          {/* Progress bar for analyzed reports */}
+
           {card.title === 'Analyzed' && totalReports > 0 && (
             <div className="mt-3">
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(analyzedReports / totalReports) * 100}%` }}
+                  style={{
+                    width: `${(analyzedReports / totalReports) * 100}%`,
+                  }}
                 ></div>
               </div>
             </div>
           )}
-          
-          {/* Severity indicator */}
+
           {card.title === 'Avg. Severity' && averageSeverity > 0 && (
             <div className="mt-3 flex space-x-1">
               {[...Array(10)].map((_, i) => (

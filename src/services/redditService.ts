@@ -350,7 +350,8 @@ class RedditService {
     const allPosts: RedditPost[] = [];
 
     // INCREASED: More subreddits and posts per subreddit
-    for (const subreddit of this.safeSubreddits.slice(0, 8)) { // Increased from 3 to 8
+    for (const subreddit of this.safeSubreddits.slice(0, 8)) {
+      // Increased from 3 to 8
       console.log(`Searching in r/${subreddit}...`);
 
       try {
@@ -359,7 +360,8 @@ class RedditService {
         allPosts.push(...regularPosts);
 
         // Then search for specific queries - MORE QUERIES
-        for (const query of queries.slice(0, 3)) { // Increased from 1 to 3 queries per subreddit
+        for (const query of queries.slice(0, 3)) {
+          // Increased from 1 to 3 queries per subreddit
           const posts = await this.searchPosts(query, subreddit, 8); // Increased from 3 to 8
           allPosts.push(...posts);
         }
@@ -372,7 +374,8 @@ class RedditService {
     // INCREASED: More global searches
     console.log('Performing expanded global search...');
     try {
-      for (const query of queries.slice(0, 5)) { // Increased from 1 to 5 global queries
+      for (const query of queries.slice(0, 5)) {
+        // Increased from 1 to 5 global queries
         const globalPosts = await this.searchPosts(query, undefined, 10); // Increased from 5 to 10
         allPosts.push(...globalPosts);
       }
@@ -433,7 +436,8 @@ class RedditService {
     const available: string[] = [];
 
     // Check more subreddits for better coverage
-    for (const subreddit of this.safeSubreddits.slice(0, 12)) { // Increased from 5 to 12
+    for (const subreddit of this.safeSubreddits.slice(0, 12)) {
+      // Increased from 5 to 12
       try {
         const isAvailable = await this.checkSubredditAvailability(subreddit);
         if (isAvailable) {

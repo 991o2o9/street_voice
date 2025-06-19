@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Save, Download, Upload, Trash2, HardDrive, AlertCircle } from 'lucide-react';
+import {
+  Save,
+  Download,
+  Upload,
+  Trash2,
+  HardDrive,
+  AlertCircle,
+} from 'lucide-react';
 import { LocalStorageService } from '../utils/localStorage';
 import { Report } from '../types';
 
@@ -9,10 +16,10 @@ interface DataPersistencePanelProps {
   onClearData: () => void;
 }
 
-export default function DataPersistencePanel({ 
-  reports, 
-  onReportsLoaded, 
-  onClearData 
+export default function DataPersistencePanel({
+  reports,
+  onReportsLoaded,
+  onClearData,
 }: DataPersistencePanelProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -20,11 +27,13 @@ export default function DataPersistencePanel({
   const storageInfo = LocalStorageService.getStorageInfo();
   const lastUpdate = LocalStorageService.getLastUpdate();
   const storageUsedMB = (storageInfo.used / (1024 * 1024)).toFixed(2);
-  const storageUsedPercent = ((storageInfo.used / storageInfo.available) * 100).toFixed(1);
+  const storageUsedPercent = (
+    (storageInfo.used / storageInfo.available) *
+    100
+  ).toFixed(1);
 
   const handleSaveToStorage = () => {
     LocalStorageService.saveReports(reports);
-    // Force re-render to show updated info
     window.location.reload();
   };
 
@@ -41,17 +50,19 @@ export default function DataPersistencePanel({
       const dataToExport = {
         reports,
         exportDate: new Date().toISOString(),
-        version: '1.0'
+        version: '1.0',
       };
 
       const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
-        type: 'application/json'
+        type: 'application/json',
       });
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `street-voice-data-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `street-voice-data-${
+        new Date().toISOString().split('T')[0]
+      }.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -69,12 +80,12 @@ export default function DataPersistencePanel({
 
     setIsImporting(true);
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
         const importedData = JSON.parse(content);
-        
+
         if (importedData.reports && Array.isArray(importedData.reports)) {
           onReportsLoaded(importedData.reports);
           LocalStorageService.saveReports(importedData.reports);
@@ -90,11 +101,15 @@ export default function DataPersistencePanel({
     };
 
     reader.readAsText(file);
-    event.target.value = ''; // Reset input
+    event.target.value = '';
   };
 
   const handleClearAllData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to clear all data? This action cannot be undone.'
+      )
+    ) {
       LocalStorageService.clearAll();
       onClearData();
     }
@@ -107,37 +122,49 @@ export default function DataPersistencePanel({
           <HardDrive className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Data Management</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Data Management
+          </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Save, load, and manage your data
           </p>
         </div>
       </div>
-
-      {/* Storage Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
             <HardDrive className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Storage Used</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Storage Used
+            </span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{storageUsedMB}MB</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{storageUsedPercent}% of available</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {storageUsedMB}MB
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {storageUsedPercent}% of available
+          </p>
         </div>
-
         <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
             <Save className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Reports Stored</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Reports Stored
+            </span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{reports.length}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">in current session</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {reports.length}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            in current session
+          </p>
         </div>
-
         <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
           <div className="flex items-center space-x-2 mb-2">
             <AlertCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Last Saved</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Last Saved
+            </span>
           </div>
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
             {lastUpdate ? lastUpdate.toLocaleTimeString() : 'Never'}
@@ -147,8 +174,6 @@ export default function DataPersistencePanel({
           </p>
         </div>
       </div>
-
-      {/* Action Buttons */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <button
           onClick={handleSaveToStorage}
@@ -158,7 +183,6 @@ export default function DataPersistencePanel({
           <Save className="w-4 h-4" />
           <span>Save</span>
         </button>
-
         <button
           onClick={handleLoadFromStorage}
           className="flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200"
@@ -166,7 +190,6 @@ export default function DataPersistencePanel({
           <Upload className="w-4 h-4" />
           <span>Load</span>
         </button>
-
         <button
           onClick={handleExportData}
           disabled={reports.length === 0 || isExporting}
@@ -179,7 +202,6 @@ export default function DataPersistencePanel({
           )}
           <span>Export</span>
         </button>
-
         <label className="flex items-center justify-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200 cursor-pointer">
           {isImporting ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -196,8 +218,6 @@ export default function DataPersistencePanel({
           />
         </label>
       </div>
-
-      {/* Clear Data Button */}
       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleClearAllData}
@@ -207,8 +227,6 @@ export default function DataPersistencePanel({
           <span>Clear All Data</span>
         </button>
       </div>
-
-      {/* Info Box */}
       <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
         <div className="flex items-start space-x-2">
           <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
