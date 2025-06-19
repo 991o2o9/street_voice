@@ -11,7 +11,7 @@
 - 🔄 **Automated complaint collection from Reddit**
 - 📂 **Topic classification**: transportation, utilities, ecology, education, and more
 - 🎭 **Sentiment analysis**: negative, positive, neutral
-- 🧠 **Resolution prediction** using the OpenAI API
+- 🧠 **Resolution prediction** using the Hugging Face
 - 📈 **Interactive data visualizations** with Recharts
 - 🗺️ **Map-based display of complaints** using Leaflet + React Leaflet
 - 🧾 **Complaint text generation** including local authority contact data
